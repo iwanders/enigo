@@ -151,10 +151,15 @@ impl Mouse for Enigo {
 
     fn move_mouse(&mut self, x: i32, y: i32, coordinate: Coordinate) -> InputResult<()> {
         debug!("\x1b[93mmove_mouse(x: {x:?}, y: {y:?}, coordinate:{coordinate:?})\x1b[0m");
-        let flags = if coordinate == Coordinate::Abs {
-            MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE
+        let (flags, x, y) = if coordinate == Coordinate::Abs {
+            let (w, h) = self.main_display()?;
+            (
+                MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE,
+                ((x as i64 * u16::MAX as i64) as f32 / w as f32).round() as i32,
+                ((y as i64 * u16::MAX as i64) as f32 / h as f32).round() as i32,
+            )
         } else {
-            MOUSEEVENTF_MOVE
+            (MOUSEEVENTF_MOVE, x, y)
         };
         let input = mouse_event(flags, 0, x, y, self.dw_extra_info);
         send_input(&[input])
