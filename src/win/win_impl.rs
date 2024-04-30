@@ -157,11 +157,12 @@ impl Mouse for Enigo {
             let h = h as i64;
             let x = x as i64;
             let y = y as i64;
-            (
-                MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE,
-                ((x * 65535 + w / 2) / w) as i32,
-                ((y * 65535 + h / 2) / h) as i32,
-            )
+            // en: Add w/2 or h/2 to round off
+            // Multiply by 65535 because MOUSEEVENTF_ABSOLUTE flag is set
+            // See https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mouse_event#remarks
+            let x = (x * 65535 + if x >= 0 { w / 2 } else { -w / 2 }) / w;
+            let y = (y * 65535 + if y >= 0 { h / 2 } else { -h / 2 }) / h;
+            (MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, x as i32, y as i32)
         } else {
             (MOUSEEVENTF_MOVE, x, y)
         };
