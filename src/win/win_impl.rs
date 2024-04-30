@@ -157,7 +157,7 @@ impl Mouse for Enigo {
             let h = h as i64;
             let x = x as i64;
             let y = y as i64;
-            // en: Add w/2 or h/2 to round off
+            // Add w/2 or h/2 to round off
             // Multiply by 65535 because MOUSEEVENTF_ABSOLUTE flag is set
             // See https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mouse_event#remarks
             let x = (x * 65535 + w / 2 * x.signum()) / w;
