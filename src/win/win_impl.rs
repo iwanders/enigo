@@ -157,11 +157,11 @@ impl Mouse for Enigo {
             let h = h as i64;
             let x = x as i64;
             let y = y as i64;
-            // Add w/2 or h/2 to round off
-            // Multiply by 65535 because MOUSEEVENTF_ABSOLUTE flag is set
+            // Multiply by 65535 because MOUSEEVENTF_ABSOLUTE flag is set, subtract one from the dimension
+            // because the highest reachable pixel is at dimension - 1.
             // See https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-mouse_event#remarks
-            let x = (x * 65535 + w / 2 * x.signum()) / w;
-            let y = (y * 65535 + h / 2 * y.signum()) / h;
+            let x = (65535.0 / (w - 1) as f64) * (x as f64);
+            let y = (65535.0 / (h - 1) as f64) * (y as f64);
             (MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, x as i32, y as i32)
         } else {
             (MOUSEEVENTF_MOVE, x, y)
